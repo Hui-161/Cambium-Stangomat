@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cambium → Stangomat</title>
+<style>
+  /* System font fallbacks replacing Google Fonts */
+</style>
+<style>
+:root {
+  --bg: #0e1015;
+  --surface: #161921;
+  --surface2: #1c1f2b;
+  --surface3: #232736;
+  --border: #282c3c;
+  --border-hi: #363b50;
+  --text: #dfe1ec;
+  --text2: #a0a4b8;
+  --text3: #6b7089;
+  --accent: #4a9eff;
+  --accent2: #3480d4;
+  --accent-bg: rgba(74,158,255,0.08);
+  --green: #34d399;
+  --green-bg: rgba(52,211,153,0.08);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --orange: #fbbf24;
+  --orange-bg: rgba(251,191,36,0.08);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.08);
+  --r: 8px;
+  --r2: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
+
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.logo{font-size:16px;font-weight:700;color:var(--accent);letter-spacing:-.3px}
+.logo-sub{color:var(--text3);font-size:12px}
+.wrap{max-width:1700px;margin:0 auto;padding:20px 24px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px 20px;margin-bottom:16px}
+.card-t{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.st{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;text-align:center}
+.st-v{font-family:'Cascadia Code','Consolas','Courier New',monospace;font-size:20px;font-weight:600}
+.st-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+.st.a .st-v{color:var(--accent)}.st.g .st-v{color:var(--green)}.st.r .st-v{color:var(--red)}.st.o .st-v{color:var(--orange)}.st.p .st-v{color:var(--purple)}
+
+.upload{border:2px dashed var(--border-hi);border-radius:var(--r2);padding:40px 20px;text-align:center;cursor:pointer;transition:.2s;background:var(--surface2)}
+.upload:hover,.upload.over{border-color:var(--accent);background:var(--accent-bg)}
+.upload p{color:var(--text2);font-size:13px}.upload .h{color:var(--text3);font-size:11px;margin-top:4px}
+input[type=file]{display:none}
+
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.fg label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.fg input,.fg select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:inherit;font-size:12px;outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--accent)}
+select option{background:var(--surface);color:var(--text)}
+
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.mi{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
+.mi .tg{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.mi select{width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:5px 7px;color:var(--text);font-family:inherit;font-size:11px;outline:none}
+
+.tw{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r)}
+.tw-inner{max-height:70vh;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{position:sticky;top:0;z-index:10}
+th{background:var(--surface3);padding:8px 10px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap;user-select:none}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--accent)}
+td{padding:6px 10px;border-bottom:1px solid var(--border);font-family:'Cascadia Code','Consolas','Courier New',monospace;font-size:11px;white-space:nowrap}
+tr:hover td{background:var(--surface2)}
+tr.err td{background:var(--red-bg)}
+tr.wrn td{background:var(--orange-bg)}
+tr.sel td{background:var(--accent-bg) !important}
+
+.ce{background:transparent;border:1px solid transparent;color:var(--text);font-family:'Cascadia Code','Consolas','Courier New',monospace;font-size:11px;padding:2px 4px;border-radius:3px;width:100%;outline:none;min-width:50px}
+.ce:hover{border-color:var(--border)}
+.ce:focus{border-color:var(--accent);background:var(--surface3)}
+.ce.invalid{border-color:var(--red);background:var(--red-bg)}
+
+.b{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--r);font-family:inherit;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:.15s;white-space:nowrap}
+.b:disabled{opacity:.35;cursor:not-allowed}
+.bp{background:var(--accent);color:#fff}.bp:hover:not(:disabled){background:#5aabff}
+.bs{background:var(--surface3);color:var(--text);border:1px solid var(--border)}.bs:hover:not(:disabled){background:var(--border)}
+.bd{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.15)}.bd:hover:not(:disabled){background:rgba(248,113,113,.15)}
+.bg{background:var(--green-bg);color:var(--green);border:1px solid rgba(52,211,153,.15)}.bg:hover:not(:disabled){background:rgba(52,211,153,.15)}
+.bo{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(251,191,36,.15)}.bo:hover:not(:disabled){background:rgba(251,191,36,.15)}
+.bsm{padding:4px 8px;font-size:11px}
+.br{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+.badge-ok{background:var(--green-bg);color:var(--green)}
+.badge-err{background:var(--red-bg);color:var(--red)}
+.badge-wrn{background:var(--orange-bg);color:var(--orange)}
+.badge-inf{background:var(--accent-bg);color:var(--accent)}
+.badge-pur{background:var(--purple-bg);color:var(--purple)}
+
+.tabs{display:flex;gap:1px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;transition:.15s}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tc{display:none}.tc.on{display:block}
+
+/* Package list */
+.pk-list{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow-y:auto}
+.pk-row{display:grid;grid-template-columns:24px 1fr 200px 80px 80px 60px;gap:8px;align-items:center;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);font-size:12px}
+.pk-row:hover{border-color:var(--border-hi)}
+.pk-row input[type=checkbox]{accent-color:var(--accent)}
+.pk-row .pk-info{color:var(--text3);font-size:11px;font-family:'Cascadia Code','Consolas','Courier New',monospace}
+.pk-row .pk-edit{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-family:inherit;font-size:12px;outline:none;width:100%}
+.pk-row .pk-edit:focus{border-color:var(--accent)}
+
+.hidden{display:none !important}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h3{font-size:15px;margin-bottom:10px}.modal p{font-size:12px;color:var(--text2);margin-bottom:12px}
+
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 0}
+.toolbar .sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+
+.hl{color:var(--accent)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fadeIn .25s ease}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo">Cambium → Stangomat</div>
+  <span class="logo-sub">CSV Import-Vorbereitung</span>
+</header>
+<div class="wrap">
+
+<!-- UPLOAD -->
+<div id="uploadCard" class="card fi">
+  <div class="card-t">CSV-Datei importieren</div>
+  <div class="upload" id="dropZone">
+    <p>📂 CSV-Datei hierher ziehen oder klicken</p>
+    <p class="h">Unterstützt: .csv, .txt — Semikolon, Komma oder Tab</p>
+  </div>
+  <input type="file" id="fileIn" accept=".csv,.txt">
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsCard" class="card hidden fi">
+  <div class="card-t">⚙ Einstellungen</div>
+  <div class="sg">
+    <div class="fg"><label>Präfix (Bauvorhaben-Nr.)</label><input type="text" id="inPrefix" placeholder="z.B. BV2024-001"></div>
+    <div class="fg"><label>KVH Länge auf volle mm runden</label>
+      <select id="selKvhLen"><option value="round_up">Aufrunden (auf nächste mm)</option><option value="round_down">Abrunden (auf vorherige mm)</option><option value="error">Nicht ganzzahlig → Fehler</option></select>
+    </div>
+    <div class="fg"><label>KVH unter 1500 mm</label>
+      <select id="selKvhShort"><option value="error">Als Fehler ausgeben</option><option value="round_up_1500">Auf 1500 mm aufrunden</option><option value="keep">Beibehalten (wie Original)</option></select>
+    </div>
+    <div class="fg"><label>BSH Längenbehandlung</label>
+      <select id="selBshLen">
+        <option value="round_system">Auf Systemlänge aufrunden (Original in Anmerkungen)</option>
+        <option value="bsh_sep_all">BSH komplett als eigene CSV</option>
+        <option value="bsh_sep_nonsys">BSH Nicht-Systemlängen als eigene CSV</option>
+      </select>
+    </div>
+    <div class="fg"><label>Trennzeichen (erkannt)</label>
+      <select id="selDelim"><option value=";">Semikolon (;)</option><option value=",">Komma (,)</option><option value="tab">Tab</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- COLUMN MAPPING -->
+<div id="mapCard" class="card hidden fi">
+  <div class="card-t">↔ Spaltenzuordnung</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:10px">CSV-Spalten den Stangomat-Feldern zuordnen. Automatische Erkennung — manuell anpassbar.</p>
+  <div class="mg" id="mapGrid"></div>
+  <div class="br"><button class="b bp" onclick="doMapping()">Zuordnung übernehmen &amp; prüfen</button></div>
+</div>
+
+<!-- STATS -->
+<div id="statsDiv" class="stats hidden fi"></div>
+
+<!-- MAIN RESULTS -->
+<div id="resArea" class="hidden fi">
+  <div class="tabs" id="tabBar">
+    <button class="tab on" data-t="overview">Übersicht &amp; Bearbeitung</button>
+    <button class="tab" data-t="errors">Fehler &amp; Warnungen</button>
+    <button class="tab" data-t="pakete">Pakete</button>
+    <button class="tab" data-t="preview">Export-Vorschau</button>
+    <button class="tab" data-t="exactcut">✂ Exakte Stiele</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="tc on" id="tc-overview">
+    <div class="card">
+      <div class="toolbar" id="tbar">
+        <button class="b bsm bs" onclick="selectAll()" title="Alle auswählen">☑ Alle</button>
+        <button class="b bsm bs" onclick="selectNone()" title="Auswahl aufheben">☐ Keine</button>
+        <button class="b bsm bs" onclick="invertSel()">⇄ Invertieren</button>
+        <div class="sep"></div>
+        <button class="b bsm bo" onclick="moveSelToPaket()">📦 Auswahl → Paket</button>
+        <button class="b bsm bd" onclick="removeSelected()">🗑 Auswahl entfernen</button>
+        <div class="sep"></div>
+        <span id="selInfo" style="font-size:11px;color:var(--text3)">0 ausgewählt</span>
+      </div>
+      <div class="tw"><div class="tw-inner" id="srcTableWrap"></div></div>
+    </div>
+  </div>
+
+  <!-- ERRORS -->
+  <div class="tc" id="tc-errors">
+    <div class="card">
+      <div class="card-t" style="color:var(--red)">Fehler (nicht für Stangomat exportierbar)</div>
+      <div id="errList"></div>
+    </div>
+    <div class="card">
+      <div class="card-t" style="color:var(--orange)">Warnungen</div>
+      <div id="wrnList"></div>
+    </div>
+    <div class="br">
+      <button class="b bd" onclick="removeErrors()">Fehlerhafte Zeilen entfernen → separate Datei</button>
+    </div>
+  </div>
+
+  <!-- PAKETE -->
+  <div class="tc" id="tc-pakete">
+    <div class="card">
+      <div class="card-t" style="color:var(--purple)">Paketverwaltung</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Pakete umbenennen, zusammenführen. Für manuelle Zuordnung → Tab "Übersicht" → Bauteile auswählen → "Auswahl → Paket".</p>
+      <div class="pk-list" id="pkList"></div>
+      <div class="br">
+        <button class="b bp" onclick="mergeChecked()">Ausgewählte zusammenführen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAKTE STIELE -->
+  <div class="tc" id="tc-exactcut">
+    <div class="card">
+      <div class="card-t" style="color:var(--orange)">✂ Exakte Stiele — Optimierter Export</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:12px">
+        Arbeitet auf der bereits hochgeladenen und geprüften CSV. Hölzer mit gleichem Querschnitt (b/h oder h/b vertauscht gilt als gleich) und exakt gleicher Länge (nach Rundung auf volle mm) werden zusammengefasst — Stückzahlen addiert, alle Bauteilnr. in den Anmerkungen gesammelt. Das Ergebnis wird ans Ende der Export-Vorschau angehängt.
+      </p>
+      <div id="esStats" class="stats" style="display:none;margin-top:4px;margin-bottom:0"></div>
+    </div>
+    <div class="card" id="esResultCard" style="display:none">
+      <div class="card-t" style="color:var(--green)">Zusammengefasste Exakte Stiele</div>
+      <div class="tw"><div class="tw-inner" id="esTableWrap"></div></div>
+      <div class="br">
+        <button class="b bg" onclick="dlExakteStiele()">⬇ Exakte Stiele CSV</button>
+        <button class="b bp" onclick="dlKombiniert()">⬇ Kombiniert (Export-Vorschau + Exakte Stiele)</button>
+      </div>
+    </div>
+    <div id="esEmpty" style="display:none;padding:20px;text-align:center;color:var(--text3);font-size:12px">Bitte zuerst eine CSV-Datei hochladen und verarbeiten.</div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="tc" id="tc-preview">
+    <div class="card">
+      <div class="card-t" style="color:var(--green)">Stangomat Export-Vorschau</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Exakt das Format, das im Stangomat importiert wird. Encoding: Windows-1252, Semikolon-getrennt, CRLF.</p>
+      <div class="tw"><div class="tw-inner" id="prevTableWrap"></div></div>
+      <div class="br">
+        <button class="b bg" onclick="dlStangomat()">⬇ Stangomat CSV</button>
+        <button class="b bs" id="btnDlErr" onclick="dlErrorCSV()">⬇ Industrie-Bestellung (Fehler)</button>
+        <button class="b bs" id="btnDlBsh" onclick="dlBshCSV()" style="display:none">⬇ BSH Sonder-CSV</button>
+      </div>
+    </div>
+    <div class="card" id="previewEsCard" style="display:none">
+      <div class="card-t" style="color:var(--orange)">✂ Exakte Stiele — angehängt ans Ende</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Diese Positionen werden beim kombinierten Export hinter dem normalen Export angehängt. Gleiches Querschnitt (b/h = h/b), exakt gleiche Länge → zusammengefasst.</p>
+      <div class="tw"><div class="tw-inner" id="previewEsWrap"></div></div>
+      <div class="br">
+        <button class="b bp" onclick="dlKombiniert()">⬇ Kombiniert (Export-Vorschau + Exakte Stiele)</button>
+        <button class="b bg" onclick="dlExakteStiele()">⬇ Nur Exakte Stiele CSV</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modalMerge">
+  <div class="modal">
+    <h3>Pakete zusammenführen</h3>
+    <p>Neuer Paketname für die zusammengeführten Pakete:</p>
+    <div class="fg"><input type="text" id="mergeNameIn" placeholder="Neuer Paketname"></div>
+    <div class="br"><button class="b bp" onclick="confirmMerge()">Zusammenführen</button><button class="b bs" onclick="closeModal('modalMerge')">Abbrechen</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="modalMovePaket">
+  <div class="modal">
+    <h3>Auswahl in Paket verschieben</h3>
+    <p id="movePaketInfo"></p>
+    <div class="fg" style="margin-bottom:8px"><label>Vorhandenes Paket wählen</label><select id="movePaketSel"><option value="__new__">— Neues Paket erstellen —</option></select></div>
+    <div class="fg" id="movePaketNewGroup"><label>Neuer Paketname</label><input type="text" id="movePaketNew" placeholder="Paketname"></div>
+    <div class="br"><button class="b bp" onclick="confirmMovePaket()">Verschieben</button><button class="b bs" onclick="closeModal('modalMovePaket')">Abbrechen</button></div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const KVH_CS=[[6,10],[6,12],[6,14],[6,16],[6,18],[6,20],[6,22],[6,24],[6,28],[8,10],[8,12],[8,14],[8,16],[8,18],[8,20],[8,22],[8,24],[8,26],[8,28],[10,10],[10,12],[10,14],[10,16],[10,18],[10,20],[10,22],[10,24],[10,26],[10,28],[12,12],[12,14],[12,16],[12,18],[12,20],[12,22],[12,24],[12,26],[12,28],[14,14],[14,16],[14,18],[14,20],[14,22],[14,24],[14,26],[16,16],[16,20],[16,24]];
+const BSH_CS=[[8,12],[8,16],[8,20],[10,10],[10,12],[10,16],[10,20],[12,12],[12,16],[12,20],[12,24],[14,14],[14,20],[14,24],[14,28],[14,32],[16,16],[16,20],[16,24],[16,28],[16,32],[16,36],[20,20],[20,24],[20,28],[20,32]];
+const BSH_SYS={'8/12':[12000],'8/16':[6000,12000],'8/20':[6000,12000],'10/10':[6000,12000],'10/12':[6000,12000],'10/16':[6000,12000],'10/20':[6000,12000],'12/12':[6000,12000],'12/16':[6000,12000],'12/20':[6000,10000,12000],'12/24':[6000,10000,12000],'14/14':[6000,12000],'14/20':[6000,12000],'14/24':[6000,9000,10000,12000],'14/28':[6000,9000,10000,12000],'14/32':[6000,9000,10000,12000],'16/16':[6000,9000,10000,12000],'16/20':[6000,12000],'16/24':[6000,9000,10000,12000],'16/28':[6000,9000,10000,12000],'16/32':[6000,9000,10000,12000],'16/36':[9000,10000,12000],'20/20':[6000,9000,10000,12000],'20/24':[6000,9000,10000,12000],'20/28':[6000,9000,10000,12000],'20/32':[6000,9000,10000,12000,13500]};
+
+let rawRows=[], rawHeaders=[], colMap={}, rows=[], removedRows=[];
+let selectedSet=new Set(); // row ids
+
+function classify(s){
+  if(!s)return null;
+  const u=s.trim().toUpperCase().replace(/[\s\-_]/g,'');
+  if(u.includes('BSH')||u.startsWith('GL'))return'BSH';
+  if(u.includes('KVH')||u==='C24')return'KVH';
+  return null;
+}
+function parseNum(v){
+  if(v==null||v==='')return NaN;
+  let s=String(v).trim().replace(/[^\d,.\-]/g,'');
+  if(s.includes(',')&&s.includes('.')){
+    s.lastIndexOf(',')>s.lastIndexOf('.')?s=s.replace(/\./g,'').replace(',','.'):s=s.replace(/,/g,'');
+  }else if(s.includes(','))s=s.replace(',','.');
+  return parseFloat(s);
+}
+function normUnit(v,unit){
+  const s=String(v).trim().toLowerCase();
+  let n=parseNum(v);if(isNaN(n))return NaN;
+  if(unit==='cm'){if(s.includes('mm'))return n/10;if(/[^c]m$|^m$/.test(s.replace(/[\d,.\s]/g,'')))return n*100;return n;}
+  if(unit==='mm'){if(s.includes('cm'))return n*10;if(/[^m]m$|^m$/.test(s.replace(/[\d,.\s]/g,''))&&!s.includes('mm'))return n*1000;return n;}
+  return n;
+}
+function validCS(type,b,h){
+  const list=type==='KVH'?KVH_CS:BSH_CS;
+  return list.some(([sb,sh])=>(sb===b&&sh===h)||(sb===h&&sh===b));
+}
+function findSysLen(b,h,len){
+  const k=`${Math.min(b,h)}/${Math.max(b,h)}`;
+  const a=BSH_SYS[k];if(!a)return null;
+  const sorted=[...a].sort((x,y)=>x-y);
+  for(const sl of sorted)if(sl>=len)return sl;
+  return null;
+}
+
+// ===================== FILE =====================
+const dropZone=document.getElementById('dropZone'),fileIn=document.getElementById('fileIn');
+dropZone.onclick=()=>fileIn.click();
+dropZone.ondragover=e=>{e.preventDefault();dropZone.classList.add('over')};
+dropZone.ondragleave=()=>dropZone.classList.remove('over');
+dropZone.ondrop=e=>{e.preventDefault();dropZone.classList.remove('over');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])};
+fileIn.onchange=e=>{if(e.target.files.length)handleFile(e.target.files[0])};
+
+function handleFile(f){
+  const r=new FileReader();
+  r.onload=e=>{
+    // Try reading as ArrayBuffer to handle various encodings
+    const buf=e.target.result;
+    let text;
+    try{
+      // Try UTF-8 first
+      text=new TextDecoder('utf-8',{fatal:true}).decode(buf);
+    }catch{
+      // Fallback to Windows-1252
+      text=new TextDecoder('windows-1252').decode(buf);
+    }
+    parseCSV(text);
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function detectDelim(text){
+  const h=text.split(/\r?\n/).slice(0,5).join('\n');
+  const s=(h.match(/;/g)||[]).length,c=(h.match(/,/g)||[]).length,t=(h.match(/\t/g)||[]).length;
+  if(t>s&&t>c)return'\t';
+  if(s>=c)return';';
+  return',';
+}
+
+function csvLine(line,d){
+  const res=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(inQ){if(c==='"'&&line[i+1]==='"'){cur+='"';i++}else if(c==='"')inQ=false;else cur+=c}
+    else{if(c==='"')inQ=true;else if(c===d){res.push(cur);cur=''}else cur+=c}
+  }
+  res.push(cur);return res;
+}
+
+function parseCSV(text){
+  const d=detectDelim(text);
+  document.getElementById('selDelim').value=d==='\t'?'tab':d;
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2){alert('Keine Daten.');return}
+  rawHeaders=csvLine(lines[0],d);
+  rawRows=[];
+  for(let i=1;i<lines.length;i++){const v=csvLine(lines[i],d);if(v.some(x=>x.trim()))rawRows.push(v)}
+  show('settingsCard');show('mapCard');
+  buildMapping();
+}
+
+// ===================== MAPPING =====================
+const TARGETS=[
+  {key:'schnittklasse',label:'Schnittklasse/Produktart',kw:['schnittklasse','produktart','klasse','quality','qualität','art','material','product','sorte','güte']},
+  {key:'breite',label:'Breite',kw:['breite','width','b']},
+  {key:'hoehe',label:'Höhe',kw:['höhe','hoehe','height','h','stärke']},
+  {key:'laenge',label:'Länge',kw:['länge','laenge','length','l']},
+  {key:'anzahl',label:'Anzahl',kw:['anzahl','count','qty','menge','stück','stueck','stk','anz']},
+  {key:'bauteilnr',label:'Bauteilnummer/Anmerkung',kw:['bauteilnummer','bauteilnr','bauteil','anmerkung','anm','name','bezeichnung','pos','position','nr','nummer','mark']},
+  {key:'paket',label:'Paket',kw:['paket','packet','package','gruppe','group','bundle']}
+];
+
+function autoCol(kws){
+  let best=-1,bs=0;
+  rawHeaders.forEach((h,i)=>{
+    const hl=h.toLowerCase().replace(/[^a-zäöü0-9]/g,'');
+    kws.forEach(k=>{if(hl.includes(k)&&k.length>bs){bs=k.length;best=i}});
+  });
+  return best;
+}
+
+function buildMapping(){
+  const g=document.getElementById('mapGrid');g.innerHTML='';
+  TARGETS.forEach(t=>{
+    const best=autoCol(t.kw);
+    const d=document.createElement('div');d.className='mi';
+    d.innerHTML=`<div class="tg">${t.label}</div><select data-tgt="${t.key}"><option value="-1">– nicht zugeordnet –</option>${rawHeaders.map((h,i)=>`<option value="${i}"${i===best?' selected':''}>${h}</option>`).join('')}</select>`;
+    g.appendChild(d);
+  });
+}
+
+function doMapping(){
+  colMap={};
+  document.querySelectorAll('#mapGrid select').forEach(s=>{
+    const idx=parseInt(s.value);if(idx>=0)colMap[s.dataset.tgt]=idx;
+  });
+  processAll();
+}
+
+// ===================== PROCESS =====================
+let nextId=1;
+function processAll(){
+  rows=[];removedRows=[];selectedSet.clear();nextId=1;
+  const kvhMode=document.getElementById('selKvhLen').value;
+  const kvhShort=document.getElementById('selKvhShort').value;
+  const bshMode=document.getElementById('selBshLen').value;
+
+  rawRows.forEach((raw,idx)=>{
+    const r={id:nextId++,_idx:idx,_raw:[...raw],_err:[],_wrn:[],_status:'ok',_excl:false,_bshSep:false};
+
+    // Extract
+    const sRaw=colMap.schnittklasse!=null?raw[colMap.schnittklasse]:'';
+    const bRaw=colMap.breite!=null?raw[colMap.breite]:'';
+    const hRaw=colMap.hoehe!=null?raw[colMap.hoehe]:'';
+    const lRaw=colMap.laenge!=null?raw[colMap.laenge]:'';
+    const aRaw=colMap.anzahl!=null?raw[colMap.anzahl]:'';
+    const nRaw=colMap.bauteilnr!=null?raw[colMap.bauteilnr]:'';
+    const pRaw=colMap.paket!=null?raw[colMap.paket]:'';
+
+    r.schnittklasseRaw=(sRaw||'').trim();
+    r.bauteilnr=(nRaw||'').trim();
+    r.paket=(pRaw||'').trim();
+    r.produktart=classify(sRaw);
+    if(!r.produktart)r._err.push(`Schnittklasse "${sRaw}" unbekannt`);
+
+    // Breite
+    r.breiteRaw=bRaw;
+    let b=normUnit(bRaw,'cm');
+    const bRounded=Math.round(b);
+    if(!isNaN(b)&&b>0&&b!==bRounded){
+      r.breite=b; // keep original float value for display
+      r._wrn.push(`Breite ${b.toFixed(2)}cm ist kein ganzzahliger Wert — Original beibehalten (aufgerundet wäre ${bRounded}cm)`);
+    } else {
+      r.breite=bRounded;
+    }
+    if(isNaN(b)||r.breite<=0)r._err.push(`Breite "${bRaw}" ungültig`);
+
+    // Höhe
+    r.hoeheRaw=hRaw;
+    let h=normUnit(hRaw,'cm');
+    const hRounded=Math.round(h);
+    if(!isNaN(h)&&h>0&&h!==hRounded){
+      r.hoehe=h; // keep original float value for display
+      r._wrn.push(`Höhe ${h.toFixed(2)}cm ist kein ganzzahliger Wert — Original beibehalten (aufgerundet wäre ${hRounded}cm)`);
+    } else {
+      r.hoehe=hRounded;
+    }
+    if(isNaN(h)||r.hoehe<=0)r._err.push(`Höhe "${hRaw}" ungültig`);
+
+    // Cross section — validate with rounded values but keep originals
+    if(r.produktart&&r.breite>0&&r.hoehe>0){
+      const bInt=Math.round(r.breite), hInt=Math.round(r.hoehe);
+      if(!validCS(r.produktart,bInt,hInt)){
+        if(validCS(r.produktart,hInt,bInt)){
+          r._wrn.push(`Breite/Höhe getauscht: ${bInt}/${hInt}`);
+        }else{
+          r._err.push(`Querschnitt ${bInt}/${hInt} für ${r.produktart} nicht verfügbar`);
+        }
+      }
+    }
+
+    // Länge
+    r.laengeRaw=lRaw;
+    let len=normUnit(lRaw,'mm');
+    r.laengeOrig=len;r.laenge=len;
+    if(isNaN(len)||len<=0){
+      r._err.push(`Länge "${lRaw}" ungültig`);
+    }else{
+      if(r.produktart==='KVH'){
+        if(len!==Math.floor(len)){
+          if(kvhMode==='round_up'){len=Math.ceil(len);r._wrn.push(`Länge aufgerundet: ${r.laengeOrig}→${len}mm`)}
+          else if(kvhMode==='round_down'){len=Math.floor(len);r._wrn.push(`Länge abgerundet: ${r.laengeOrig}→${len}mm`)}
+          else r._err.push(`Länge ${len}mm Nachkommastellen`);
+        }
+        r.laenge=Math.round(len);
+        if(r.laenge<1500){
+          if(kvhShort==='round_up_1500'){r.kvhOrigLen=r.laenge;r._wrn.push(`Länge ${r.laenge}mm → 1500mm (Mindestlänge)`);r.laenge=1500}
+          else if(kvhShort==='keep'){r._wrn.push(`Länge ${r.laenge}mm unter Mindestlänge 1500mm — beibehalten`)}
+          else r._err.push(`KVH Länge ${r.laenge}mm < 1500mm`);
+        }
+        if(r.laenge>13008)r._err.push(`KVH Länge ${r.laenge}mm > 13008mm`);
+      }
+      if(r.produktart==='BSH'){
+        r.laenge=Math.round(len);
+        const sys=findSysLen(r.breite,r.hoehe,r.laenge);
+        r.bshSys=sys;
+        if(sys==null||sys!==r.laenge){
+          if(bshMode==='round_system'){
+            if(sys!=null){r.bshOrigLen=r.laenge;r._wrn.push(`BSH Systemlänge: ${r.laenge}→${sys}mm`);r.laenge=sys}
+            else r._err.push(`BSH ${r.breite}/${r.hoehe}: Keine Systemlänge ≥ ${r.laenge}mm`);
+          }else if(bshMode==='bsh_sep_all'){
+            r._bshSep=true;r._wrn.push('BSH → separate Datei');
+          }else if(bshMode==='bsh_sep_nonsys'){
+            r._bshSep=true;r._wrn.push('BSH Nicht-Systemlänge → separate Datei');
+          }
+        }
+      }
+    }
+
+    // Anzahl
+    r.anzahlRaw=aRaw;r.anzahl=parseInt(parseNum(aRaw));
+    if(isNaN(r.anzahl)||r.anzahl<=0)r._err.push(`Anzahl "${aRaw}" ungültig`);
+
+    if(!r.bauteilnr)r._wrn.push('Bauteilnr. leer');
+
+    r._status=r._err.length?'error':r._wrn.length?'warning':'ok';
+    rows.push(r);
+  });
+  updateAll();
+}
+
+// ===================== UI =====================
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hide(id){document.getElementById(id).classList.add('hidden')}
+function $(id){return document.getElementById(id)}
+
+function updateAll(){
+  show('statsDiv');show('resArea');
+  renderStats();renderSrcTable();renderErrors();renderPakete();renderPreview();buildExakteStiele();
+}
+
+function renderStats(){
+  const valid=rows.filter(r=>r._status!=='error'&&!r._bshSep);
+  const totBt=valid.reduce((s,r)=>s+(r.anzahl||0),0);
+  const totLfm=valid.reduce((s,r)=>s+((r.laenge||0)*(r.anzahl||0)),0)/1000;
+  const pkts=new Set(valid.map(r=>r.paket||'(leer)'));
+  const errCnt=rows.filter(r=>r._status==='error').length;
+  const bshSep=rows.filter(r=>r._bshSep&&r._status!=='error').length;
+  $('statsDiv').innerHTML=`
+    <div class="st a"><div class="st-v">${rows.length}</div><div class="st-l">Zeilen</div></div>
+    <div class="st g"><div class="st-v">${valid.length}</div><div class="st-l">Export-fähig</div></div>
+    <div class="st r"><div class="st-v">${errCnt}</div><div class="st-l">Fehler</div></div>
+    <div class="st o"><div class="st-v">${bshSep}</div><div class="st-l">BSH sep.</div></div>
+    <div class="st p"><div class="st-v">${pkts.size}</div><div class="st-l">Pakete</div></div>
+    <div class="st"><div class="st-v">${totBt}</div><div class="st-l">Bauteile</div></div>
+    <div class="st"><div class="st-v">${(totLfm).toFixed(1)}</div><div class="st-l">Lfd. Meter</div></div>`;
+  $('statsDiv').classList.remove('hidden');
+}
+
+// ============ EDITABLE SOURCE TABLE ============
+function renderSrcTable(){
+  const pfx=$('inPrefix').value.trim();
+  let h='<table><thead><tr><th style="width:30px"><input type="checkbox" id="chkAll" onchange="toggleAll(this.checked)"></th><th>#</th><th>Status</th><th>Produktart</th><th>Breite</th><th>Höhe</th><th>Länge (mm)</th><th>Anzahl</th><th>Bauteilnr.</th><th>Paket</th><th>Hinweise</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    const cls=r._status==='error'?'err':r._status==='warning'?'wrn':'';
+    const sel=selectedSet.has(r.id);
+    const sc=sel?' sel':'';
+    const sBadge=r._status==='error'?'<span class="badge badge-err">Fehler</span>':r._status==='warning'?'<span class="badge badge-wrn">Warnung</span>':'<span class="badge badge-ok">OK</span>';
+    const bshT=r._bshSep?'<span class="badge badge-inf">BSH sep.</span>':'';
+    const notes=[...r._err.map(e=>'❌ '+e),...r._wrn.map(w=>'⚠️ '+w)].join('<br>');
+    const pk=pfx&&r.paket?pfx+'_'+r.paket:r.paket;
+    h+=`<tr class="${cls}${sc}" data-rid="${r.id}">
+      <td><input type="checkbox" ${sel?'checked':''} onchange="toggleSel(${r.id},this.checked)"></td>
+      <td>${i+1}</td>
+      <td>${sBadge} ${bshT}</td>
+      <td><select class="ce" style="min-width:60px" onchange="editField(${r.id},'produktart',this.value)"><option value="KVH"${r.produktart==='KVH'?' selected':''}>KVH</option><option value="BSH"${r.produktart==='BSH'?' selected':''}>BSH</option></select></td>
+      <td><input class="ce" style="width:45px" value="${isNaN(r.breite)?'':r.breite}" onchange="editField(${r.id},'breite',this.value)"></td>
+      <td><input class="ce" style="width:45px" value="${isNaN(r.hoehe)?'':r.hoehe}" onchange="editField(${r.id},'hoehe',this.value)"></td>
+      <td><input class="ce" style="width:70px" value="${isNaN(r.laenge)?'':r.laenge}" onchange="editField(${r.id},'laenge',this.value)"></td>
+      <td><input class="ce" style="width:45px" value="${isNaN(r.anzahl)?'':r.anzahl}" onchange="editField(${r.id},'anzahl',this.value)"></td>
+      <td><input class="ce" style="min-width:80px" value="${r.bauteilnr}" onchange="editField(${r.id},'bauteilnr',this.value)"></td>
+      <td><input class="ce" style="min-width:80px" value="${r.paket}" onchange="editField(${r.id},'paket',this.value)"></td>
+      <td style="white-space:normal;max-width:280px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:11px">${notes||'–'}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  $('srcTableWrap').innerHTML=h;
+  updateSelInfo();
+}
+
+function editField(id,field,val){
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  if(field==='breite'){const n=parseFloat(val.replace(',','.'));r.breite=isNaN(n)?0:n;r.breiteRaw=val}
+  else if(field==='hoehe'){const n=parseFloat(val.replace(',','.'));r.hoehe=isNaN(n)?0:n;r.hoeheRaw=val}
+  else if(field==='laenge'){r.laenge=parseInt(val)||0;r.laengeRaw=val;r.laengeOrig=r.laenge;r.bshOrigLen=undefined;r.kvhOrigLen=undefined}
+  else if(field==='anzahl'){r.anzahl=parseInt(val)||0;r.anzahlRaw=val}
+  else if(field==='bauteilnr'){r.bauteilnr=val}
+  else if(field==='paket'){r.paket=val}
+  else if(field==='produktart'){r.produktart=val;r.schnittklasseRaw=val}
+  revalidateRow(r);
+  // Update the row visually in-place (keep focus)
+  const tr=document.querySelector(`tr[data-rid="${id}"]`);
+  if(tr){
+    const cls=r._status==='error'?'err':r._status==='warning'?'wrn':'';
+    tr.className=(cls+(selectedSet.has(r.id)?' sel':'')).trim();
+    const sBadge=r._status==='error'?'<span class="badge badge-err">Fehler</span>':r._status==='warning'?'<span class="badge badge-wrn">Warnung</span>':'<span class="badge badge-ok">OK</span>';
+    const bshT=r._bshSep?'<span class="badge badge-inf">BSH sep.</span>':'';
+    tr.cells[2].innerHTML=sBadge+' '+bshT;
+    const notes=[...r._err.map(e=>'❌ '+e),...r._wrn.map(w=>'⚠️ '+w)].join('<br>');
+    tr.cells[10].innerHTML=notes||'–';
+  }
+  renderStats();renderErrors();renderPakete();renderPreview();
+}
+
+function revalidateRow(r){
+  r._err=[];r._wrn=[];r._bshSep=false;
+  const kvhShort=$('selKvhShort').value;
+  if(!r.produktart)r._err.push('Produktart fehlt');
+  if(isNaN(r.breite)||r.breite<=0)r._err.push('Breite ungültig');
+  else if(r.breite!==Math.round(r.breite))r._wrn.push(`Breite ${r.breite}cm ist kein ganzzahliger Wert — Original beibehalten (aufgerundet wäre ${Math.round(r.breite)}cm)`);
+  if(isNaN(r.hoehe)||r.hoehe<=0)r._err.push('Höhe ungültig');
+  else if(r.hoehe!==Math.round(r.hoehe))r._wrn.push(`Höhe ${r.hoehe}cm ist kein ganzzahliger Wert — Original beibehalten (aufgerundet wäre ${Math.round(r.hoehe)}cm)`);
+  if(r.produktart&&r.breite>0&&r.hoehe>0){
+    const bInt=Math.round(r.breite), hInt=Math.round(r.hoehe);
+    if(!validCS(r.produktart,bInt,hInt)){
+      if(!validCS(r.produktart,hInt,bInt))r._err.push(`Querschnitt ${bInt}/${hInt} für ${r.produktart} nicht verfügbar`);
+      else r._wrn.push('Breite/Höhe ggf. tauschen');
+    }
+  }
+  if(isNaN(r.laenge)||r.laenge<=0)r._err.push('Länge ungültig');
+  else if(r.produktart==='KVH'){
+    if(r.laenge<1500){
+      if(kvhShort==='error')r._err.push(`KVH Länge ${r.laenge}mm < 1500mm`);
+      else if(kvhShort==='keep')r._wrn.push(`Länge ${r.laenge}mm unter 1500mm — beibehalten`);
+      // round_up_1500 is handled at export
+    }
+    if(r.laenge>13008)r._err.push(`KVH Länge ${r.laenge}mm > 13008mm`);
+  }else if(r.produktart==='BSH'){
+    const bshMode=$('selBshLen').value;
+    const sys=findSysLen(r.breite,r.hoehe,r.laenge);
+    if(sys==null||sys!==r.laenge){
+      if(bshMode==='round_system'){
+        if(sys!=null){r.bshOrigLen=r.laenge;r._wrn.push(`BSH Systemlänge: ${r.laenge}→${sys}mm`)}
+        else r._err.push(`BSH: Keine Systemlänge ≥ ${r.laenge}mm`);
+      }else if(bshMode==='bsh_sep_all'||bshMode==='bsh_sep_nonsys'){
+        r._bshSep=true;r._wrn.push('BSH → separate Datei');
+      }
+    }
+  }
+  if(isNaN(r.anzahl)||r.anzahl<=0)r._err.push('Anzahl ungültig');
+  if(!r.bauteilnr)r._wrn.push('Bauteilnr. leer');
+  r._status=r._err.length?'error':r._wrn.length?'warning':'ok';
+}
+
+// ============ SELECTION ============
+function toggleSel(id,checked){
+  if(checked)selectedSet.add(id);else selectedSet.delete(id);
+  const tr=document.querySelector(`tr[data-rid="${id}"]`);
+  if(tr){if(checked)tr.classList.add('sel');else tr.classList.remove('sel')}
+  updateSelInfo();
+}
+function toggleAll(checked){
+  rows.forEach(r=>{if(checked)selectedSet.add(r.id);else selectedSet.delete(r.id)});
+  renderSrcTable();
+}
+function selectAll(){rows.forEach(r=>selectedSet.add(r.id));renderSrcTable()}
+function selectNone(){selectedSet.clear();renderSrcTable()}
+function invertSel(){rows.forEach(r=>{if(selectedSet.has(r.id))selectedSet.delete(r.id);else selectedSet.add(r.id)});renderSrcTable()}
+function updateSelInfo(){$('selInfo').textContent=selectedSet.size+' ausgewählt'}
+
+function moveSelToPaket(){
+  if(!selectedSet.size){alert('Keine Zeilen ausgewählt.');return}
+  // Build existing paket list
+  const sel=$('movePaketSel');sel.innerHTML='<option value="__new__">— Neues Paket erstellen —</option>';
+  const pkts=[...new Set(rows.map(r=>r.paket).filter(Boolean))].sort();
+  pkts.forEach(p=>{sel.innerHTML+=`<option value="${p}">${p}</option>`});
+  $('movePaketInfo').textContent=`${selectedSet.size} Bauteile verschieben:`;
+  $('movePaketNew').value='';
+  $('movePaketNewGroup').classList.remove('hidden');
+  sel.onchange=()=>{
+    $('movePaketNewGroup').classList.toggle('hidden',sel.value!=='__new__');
+  };
+  openModal('modalMovePaket');
+}
+function confirmMovePaket(){
+  const sel=$('movePaketSel').value;
+  let name=sel==='__new__'?$('movePaketNew').value.trim():sel;
+  if(!name){alert('Bitte Paketnamen eingeben.');return}
+  rows.forEach(r=>{if(selectedSet.has(r.id))r.paket=name});
+  closeModal('modalMovePaket');
+  selectedSet.clear();
+  updateAll();
+}
+
+function removeSelected(){
+  if(!selectedSet.size)return;
+  if(!confirm(`${selectedSet.size} Zeilen entfernen?`))return;
+  const removed=rows.filter(r=>selectedSet.has(r.id));
+  removedRows.push(...removed);
+  rows=rows.filter(r=>!selectedSet.has(r.id));
+  selectedSet.clear();
+  updateAll();
+}
+
+// ============ ERRORS ============
+function renderErrors(){
+  const errs=rows.filter(r=>r._err.length);
+  const wrns=rows.filter(r=>r._wrn.length&&!r._err.length);
+  let eh='';
+  if(!errs.length)eh='<p style="color:var(--green);font-size:12px">Keine Fehler.</p>';
+  else{eh='<ul style="list-style:none;padding:0">';errs.forEach(r=>r._err.forEach(e=>{eh+=`<li style="padding:6px 10px;border-left:3px solid var(--red);background:var(--red-bg);border-radius:0 6px 6px 0;margin-bottom:4px;font-size:12px"><b>Zeile ${r._idx+1}</b> — ${e}</li>`}));eh+='</ul>'}
+  $('errList').innerHTML=eh;
+  let wh='';
+  if(!wrns.length)wh='<p style="color:var(--green);font-size:12px">Keine Warnungen.</p>';
+  else{wh='<ul style="list-style:none;padding:0">';wrns.forEach(r=>r._wrn.forEach(w=>{wh+=`<li style="padding:6px 10px;border-left:3px solid var(--orange);background:var(--orange-bg);border-radius:0 6px 6px 0;margin-bottom:4px;font-size:12px"><b>Zeile ${r._idx+1}</b> — ${w}</li>`}));wh+='</ul>'}
+  $('wrnList').innerHTML=wh;
+}
+
+function removeErrors(){
+  const errs=rows.filter(r=>r._status==='error');
+  if(!errs.length){alert('Keine Fehler vorhanden.');return}
+  if(!confirm(`${errs.length} fehlerhafte Zeilen entfernen und als separate Industrie-Datei speichern?`))return;
+  removedRows.push(...errs);
+  rows=rows.filter(r=>r._status!=='error');
+  updateAll();
+  dlErrorCSV();
+}
+
+// ============ PAKETE ============
+function renderPakete(){
+  const map={};
+  rows.filter(r=>r._status!=='error').forEach(r=>{
+    const p=r.paket||'(kein Paket)';
+    if(!map[p])map[p]={items:[],count:0,lfm:0};
+    map[p].items.push(r);
+    map[p].count+=(r.anzahl||0);
+    map[p].lfm+=(r.laenge||0)*(r.anzahl||0)/1000;
+  });
+  const c=$('pkList');c.innerHTML='';
+  // Header row
+  c.innerHTML=`<div class="pk-row" style="background:var(--surface3);font-weight:600;font-size:11px;color:var(--text2)">
+    <div></div><div>Paketname</div><div>Neuer Name</div><div>Positionen</div><div>Bauteile</div><div>Lfm</div></div>`;
+  Object.entries(map).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name,d])=>{
+    const div=document.createElement('div');div.className='pk-row';
+    div.innerHTML=`
+      <input type="checkbox" data-mpk="${name}">
+      <div style="font-weight:600;color:var(--accent)">${name}</div>
+      <input class="pk-edit" value="${name==='(kein Paket)'?'':name}" data-pk-orig="${name}" onchange="renamePk('${name.replace(/'/g,"\\'")}',this.value)">
+      <div class="pk-info">${d.items.length}</div>
+      <div class="pk-info">${d.count}</div>
+      <div class="pk-info">${d.lfm.toFixed(1)}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function renamePk(old,nw){
+  rows.forEach(r=>{if((r.paket||'(kein Paket)')===old)r.paket=nw||''});
+  renderStats();renderSrcTable();renderPreview();
+}
+
+function mergeChecked(){
+  const cbs=document.querySelectorAll('input[data-mpk]:checked');
+  if(cbs.length<2){alert('Mindestens 2 Pakete auswählen.');return}
+  openModal('modalMerge');
+}
+function confirmMerge(){
+  const name=$('mergeNameIn').value.trim();
+  if(!name){alert('Name eingeben.');return}
+  const cbs=document.querySelectorAll('input[data-mpk]:checked');
+  const old=new Set();cbs.forEach(cb=>old.add(cb.dataset.mpk));
+  rows.forEach(r=>{if(old.has(r.paket||'(kein Paket)'))r.paket=name});
+  closeModal('modalMerge');$('mergeNameIn').value='';
+  updateAll();
+}
+
+// ============ PREVIEW & EXPORT ============
+function getExportRows(){
+  const pfx=$('inPrefix').value.trim();
+  const kvhShort=$('selKvhShort').value;
+  return rows.filter(r=>r._status!=='error'&&!r._bshSep).map(r=>{
+    let anm=r.bauteilnr||'';
+    if(r.bshOrigLen&&r.bshOrigLen!==r.laenge){
+      anm=anm?`${anm} (Original: ${r.bshOrigLen}mm)`:`Original: ${r.bshOrigLen}mm`;
+    }
+    let len=r.laenge;
+    // Apply KVH short rounding at export time
+    if(r.produktart==='KVH'&&len<1500&&kvhShort==='round_up_1500'){
+      const origLen=len;
+      len=1500;
+      anm=anm?`${anm} (Original: ${origLen}mm)`:`Original: ${origLen}mm`;
+    }
+    // Also handle KVH already rounded during processAll
+    if(r.kvhOrigLen&&r.kvhOrigLen!==r.laenge){
+      if(!anm.includes('Original:'))anm=anm?`${anm} (Original: ${r.kvhOrigLen}mm)`:`Original: ${r.kvhOrigLen}mm`;
+    }
+    const pk=pfx&&r.paket?pfx+'_'+r.paket:(r.paket||'');
+    return{produktart:r.produktart,breite:Math.round(r.breite),hoehe:Math.round(r.hoehe),laenge:len,anzahl:r.anzahl,anmerkung:anm,paket:pk};
+  });
+}
+
+function renderPreview(){
+  const ex=getExportRows();
+  const bshMode=$('selBshLen').value;
+  const bshSep=rows.filter(r=>r._bshSep&&r._status!=='error');
+  $('btnDlBsh').style.display=(bshMode!=='round_system'&&bshSep.length)?'':'none';
+  $('btnDlErr').style.display=(removedRows.length||rows.some(r=>r._status==='error'))?'':'none';
+  let h='<table><thead><tr><th>Produktart</th><th>Breite (cm)</th><th>Höhe (cm)</th><th>Länge (mm)</th><th>Anzahl</th><th>Anmerkungen</th><th>Paket</th></tr></thead><tbody>';
+  if(!ex.length)h+='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">Keine Daten</td></tr>';
+  ex.forEach(r=>{
+    h+=`<tr><td><span class="badge ${r.produktart==='KVH'?'badge-inf':'badge-pur'}">${r.produktart}</span></td><td>${r.breite}</td><td>${r.hoehe}</td><td>${r.laenge}</td><td>${r.anzahl}</td><td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif">${r.anmerkung||'–'}</td><td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif">${r.paket||'–'}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  $('prevTableWrap').innerHTML=h;
+}
+
+// ============ DOWNLOAD ============
+// Encode to Windows-1252
+function toWin1252(str){
+  const enc=new TextEncoder();
+  const bytes=[];
+  for(let i=0;i<str.length;i++){
+    const c=str.charCodeAt(i);
+    // Map common chars
+    if(c===0xF6)bytes.push(0xF6); // ö
+    else if(c===0xE4)bytes.push(0xE4); // ä
+    else if(c===0xFC)bytes.push(0xFC); // ü
+    else if(c===0xD6)bytes.push(0xD6); // Ö
+    else if(c===0xC4)bytes.push(0xC4); // Ä
+    else if(c===0xDC)bytes.push(0xDC); // Ü
+    else if(c===0xDF)bytes.push(0xDF); // ß
+    else if(c<256)bytes.push(c);
+    else bytes.push(0x3F); // ?
+  }
+  return new Uint8Array(bytes);
+}
+
+function csvVal(v){
+  const s=String(v==null?'':v);
+  if(s.includes(';')||s.includes('"')||s.includes('\n'))return'"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+
+function dlFile(bytes,name,type){
+  const blob=new Blob([bytes],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url)},100);
+}
+
+function dlStangomat(){
+  const ex=getExportRows();
+  if(!ex.length){alert('Keine Daten.');return}
+  // Exact header from working file
+  let csv='Produktart;Breite (cm);H\u00f6he (cm);L\u00e4nge (mm);Anzahl;Anmerkungen;Paket\r\n';
+  ex.forEach(r=>{
+    csv+=`${r.produktart};${r.breite};${r.hoehe};${r.laenge};${r.anzahl};${csvVal(r.anmerkung)};${csvVal(r.paket)}\r\n`;
+  });
+  const bytes=toWin1252(csv);
+  dlFile(bytes,'Stangomat_Import.csv','text/csv');
+}
+
+function dlErrorCSV(){
+  // Industrie-Bestellung: Original-Format beibehalten
+  const errs=[...removedRows,...rows.filter(r=>r._status==='error')];
+  if(!errs.length){alert('Keine Fehler.');return}
+  // Rebuild with original headers + error column
+  let csv=rawHeaders.join(';')+';Fehler\r\n';
+  errs.forEach(r=>{
+    csv+=r._raw.map(v=>csvVal(v)).join(';')+';'+csvVal(r._err.join(' | '))+'\r\n';
+  });
+  const BOM='\uFEFF';
+  dlFile(new TextEncoder().encode(BOM+csv),'Industrie_Bestellung.csv','text/csv;charset=utf-8');
+}
+
+function dlBshCSV(){
+  const bsh=rows.filter(r=>r._bshSep&&r._status!=='error');
+  if(!bsh.length){alert('Keine BSH-Sonderdaten.');return}
+  // Original format
+  let csv=rawHeaders.join(';')+'\r\n';
+  bsh.forEach(r=>{csv+=r._raw.map(v=>csvVal(v)).join(';')+'\r\n'});
+  const BOM='\uFEFF';
+  dlFile(new TextEncoder().encode(BOM+csv),'BSH_Sonder_Export.csv','text/csv;charset=utf-8');
+}
+
+// ============ EXAKTE STIELE ============
+let esRows = []; // merged result rows
+
+function buildExakteStiele() {
+  // Work on the same export rows that go into the preview (already validated, errors excluded)
+  const source = getExportRows();
+
+  if (!source.length) {
+    document.getElementById('esEmpty').style.display = 'block';
+    document.getElementById('esStats').style.display = 'none';
+    document.getElementById('esResultCard').style.display = 'none';
+    document.getElementById('previewEsCard').style.display = 'none';
+    return;
+  }
+  document.getElementById('esEmpty').style.display = 'none';
+
+  // Group by produktart + normalized cross-section (min/max to treat b/h == h/b) + exact length
+  const groups = {};
+  source.forEach(r => {
+    const bMin = Math.min(r.breite, r.hoehe);
+    const bMax = Math.max(r.breite, r.hoehe);
+    const key = `${r.produktart}|${bMin}|${bMax}|${r.laenge}`;
+    if (!groups[key]) {
+      groups[key] = {
+        produktart: r.produktart,
+        breite: r.breite,   // keep orientation of first occurrence
+        hoehe: r.hoehe,
+        laenge: r.laenge,
+        anzahl: 0,
+        bauteilnrs: [],
+        pakete: new Set()
+      };
+    }
+    groups[key].anzahl += r.anzahl;
+    // Collect original bauteilnr/anmerkung - strip previously embedded originals to avoid nesting
+    const rawAnm = (r.anmerkung || '').replace(/\s*\(Original:.*?\)/g, '').trim();
+    if (rawAnm) groups[key].bauteilnrs.push(rawAnm);
+    if (r.paket) groups[key].pakete.add(r.paket);
+  });
+
+  esRows = Object.values(groups);
+
+  const origCount = source.length;
+  const mergedCount = esRows.length;
+  const savedPos = origCount - mergedCount;
+  const totalBauteile = esRows.reduce((s, r) => s + r.anzahl, 0);
+
+  // Stats
+  const st = document.getElementById('esStats');
+  st.style.display = 'grid';
+  st.innerHTML = `
+    <div class="st a"><div class="st-v">${origCount}</div><div class="st-l">Positionen vorher</div></div>
+    <div class="st g"><div class="st-v">${mergedCount}</div><div class="st-l">Positionen nachher</div></div>
+    <div class="st o"><div class="st-v">${savedPos}</div><div class="st-l">Eingespart</div></div>
+    <div class="st p"><div class="st-v">${totalBauteile}</div><div class="st-l">Bauteile ges.</div></div>`;
+
+  // Table
+  let h = '<table><thead><tr><th>Produktart</th><th>Breite (cm)</th><th>Höhe (cm)</th><th>Länge (mm)</th><th>Anzahl</th><th>Anmerkungen (alle Bauteilnr.)</th><th>Paket</th></tr></thead><tbody>';
+  esRows.forEach(r => {
+    const anm = r.bauteilnrs.join(', ');
+    const pk = [...r.pakete].join(', ') || '–';
+    h += `<tr>
+      <td><span class="badge ${r.produktart==='KVH'?'badge-inf':'badge-pur'}">${r.produktart}</span></td>
+      <td>${r.breite}</td><td>${r.hoehe}</td><td>${r.laenge}</td><td>${r.anzahl}</td>
+      <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;white-space:normal;max-width:320px">${anm||'–'}</td>
+      <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif">${pk}</td>
+    </tr>`;
+  });
+  h += '</tbody></table>';
+  document.getElementById('esTableWrap').innerHTML = h;
+  document.getElementById('esResultCard').style.display = 'block';
+
+  // Mirror into Export-Vorschau tab
+  document.getElementById('previewEsWrap').innerHTML = h;
+  document.getElementById('previewEsCard').style.display = 'block';
+}
+
+function dlExakteStiele() {
+  if (!esRows.length) { alert('Keine Daten.'); return; }
+  let csv = 'Produktart;Breite (cm);H\u00f6he (cm);L\u00e4nge (mm);Anzahl;Anmerkungen;Paket\r\n';
+  esRows.forEach(r => {
+    const anm = r.bauteilnrs.join(', ');
+    const pk = [...r.pakete].join(', ');
+    csv += `${r.produktart};${r.breite};${r.hoehe};${r.laenge};${r.anzahl};${csvVal(anm)};${csvVal(pk)}\r\n`;
+  });
+  dlFile(toWin1252(csv), 'Exakte_Stiele_Import.csv', 'text/csv');
+}
+
+function dlKombiniert() {
+  const ex = getExportRows();
+  if (!ex.length && !esRows.length) { alert('Keine Daten.'); return; }
+  let csv = 'Produktart;Breite (cm);H\u00f6he (cm);L\u00e4nge (mm);Anzahl;Anmerkungen;Paket\r\n';
+  // Normal export rows first
+  ex.forEach(r => {
+    csv += `${r.produktart};${r.breite};${r.hoehe};${r.laenge};${r.anzahl};${csvVal(r.anmerkung)};${csvVal(r.paket)}\r\n`;
+  });
+  // Then Exakte Stiele appended
+  esRows.forEach(r => {
+    const anm = r.bauteilnrs.join(', ');
+    const pk = [...r.pakete].join(', ');
+    csv += `${r.produktart};${r.breite};${r.hoehe};${r.laenge};${r.anzahl};${csvVal(anm)};${csvVal(pk)}\r\n`;
+  });
+  dlFile(toWin1252(csv), 'Stangomat_Kombiniert_Import.csv', 'text/csv');
+}
+
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.tc').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('tc-'+t.dataset.t).classList.add('on');
+  };
+});
+
+// Re-process on settings change
+['selKvhLen','selKvhShort','selBshLen'].forEach(id=>{
+  $(id).onchange=()=>{if(rows.length)processAll()};
+});
+$('inPrefix').oninput=()=>{if(rows.length){renderStats();renderSrcTable();renderPreview();renderPakete()}};
+
+function openModal(id){$(id).classList.add('show')}
+function closeModal(id){$(id).classList.remove('show')}
+document.querySelectorAll('.modal-bg').forEach(m=>{m.onclick=e=>{if(e.target===m)m.classList.remove('show')}});
+</script>
+</body>
+</html>
