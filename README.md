@@ -2,7 +2,8 @@
 
 **CSV-Import-Vorbereitung für den Stangomat** — direkt im Browser, keine Installation, keine externen Abhängigkeiten.
 
-🔗 **[→ Web-App direkt öffnen](https://hui-161.github.io/cambium-stangomat/)**
+Web-App direkt öffnen:
+https://hui-161.github.io/Cambium-Stangomat/
 
 ---
 
